@@ -1,0 +1,21 @@
+pre-commit:
+  parallel: false
+  commands:
+    oxlint:
+      glob: '*.{js,ts,jsx,tsx}'
+      run: pnpm exec oxlint --fix {staged_files}
+      stage_fixed: true
+    tsgolint:
+      glob: '*.{ts,tsx}'
+      run: pnpm exec oxlint-tsgolint --type-aware {staged_files}
+    prettier:
+      glob: '*.{js,ts,jsx,tsx,json,css,md}'
+      run: pnpm exec prettier --write {staged_files}
+      stage_fixed: true
+    typecheck:
+      run: pnpm exec tsc --noEmit
+
+commit-msg:
+  commands:
+    commitlint:
+      run: pnpm exec commitlint --edit {1}
