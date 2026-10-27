@@ -14,7 +14,8 @@ O BJJ Flow Timer é um aplicativo desenvolvido para auxiliar no controle de temp
 - [Expo Router](https://docs.expo.dev/router/introduction/) - Navegação file-based
 - [NativeWind v4](https://www.nativewind.dev/) - Tailwind CSS para React Native
 - [React Native Reanimated](https://docs.swmansion.com/react-native-reanimated/) - Animações performáticas
-- [react-native-reusables](https://rnr.show/) - UI kit baseado em rn-primitives
+- [Gluestack UI](https://ui.gluestack.io/) - Componentes UI acessíveis e estilizados
+- [tailwind-variants](https://www.tailwind-variants.org/) - Variantes de componentes com Tailwind
 
 ## Pré-requisitos
 
@@ -70,6 +71,7 @@ src/
 - Utilizar NativeWind para estilização
 - Usar `pnpm` para gerenciar dependências
 - Seguir padrões mobile-first e otimizações de performance
+- Evitar editar pastas `ios/` e `android/` manualmente (geradas via CNG)
 
 ## Licença
 
