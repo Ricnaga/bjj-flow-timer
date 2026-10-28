@@ -1,8 +1,11 @@
-import { Audio } from 'expo-av'
-import { Asset } from 'expo-asset'
+import {
+  createAudioPlayer,
+  setAudioModeAsync,
+  type AudioPlayer,
+} from 'expo-audio'
 
-let beepSound: Audio.Sound | null = null
-let fightSound: Audio.Sound | null = null
+let beepSound: AudioPlayer | null = null
+let fightSound: AudioPlayer | null = null
 let loaded = false
 
 export async function loadSounds() {
@@ -11,36 +14,32 @@ export async function loadSounds() {
   }
 
   try {
-    await Audio.setAudioModeAsync({
-      playsInSilentModeIOS: true,
-      staysActiveInBackground: false,
-      shouldDuckAndroid: true,
+    await setAudioModeAsync({
+      playsInSilentMode: true,
+      shouldPlayInBackground: false,
+      interruptionMode: 'duckOthers',
     })
 
-    const beepAsset = Asset.fromModule(require('../../../assets/beep.wav'))
-    const fightAsset = Asset.fromModule(require('../../../assets/fight_sound.wav'))
+    beepSound = createAudioPlayer(require('../../../assets/beep.wav'))
+    fightSound = createAudioPlayer(require('../../../assets/fight_sound.wav'))
 
-    await beepAsset.downloadAsync()
-    await fightAsset.downloadAsync()
-
-    const beepResult = await Audio.Sound.createAsync(beepAsset, { shouldPlay: false })
-    const fightResult = await Audio.Sound.createAsync(fightAsset, { shouldPlay: false })
-
-    beepSound = beepResult.sound
-    fightSound = fightResult.sound
     loaded = true
   } catch (error) {
     console.warn('Erro ao carregar sons:', error)
   }
 }
 
+async function replay(player: AudioPlayer | null) {
+  if (!player) {
+    return
+  }
+  await player.seekTo(0)
+  player.play()
+}
+
 export async function playBeep() {
   try {
-    if (!beepSound) {
-      return
-    }
-    await beepSound.setPositionAsync(0)
-    await beepSound.playAsync()
+    await replay(beepSound)
   } catch (error) {
     console.warn('Erro ao tocar beep:', error)
   }
@@ -48,11 +47,7 @@ export async function playBeep() {
 
 export async function playFight() {
   try {
-    if (!fightSound) {
-      return
-    }
-    await fightSound.setPositionAsync(0)
-    await fightSound.playAsync()
+    await replay(fightSound)
   } catch (error) {
     console.warn('Erro ao tocar fight sound:', error)
   }
@@ -60,14 +55,10 @@ export async function playFight() {
 
 export async function unloadSounds() {
   try {
-    if (beepSound) {
-      await beepSound.unloadAsync()
-      beepSound = null
-    }
-    if (fightSound) {
-      await fightSound.unloadAsync()
-      fightSound = null
-    }
+    beepSound?.remove()
+    fightSound?.remove()
+    beepSound = null
+    fightSound = null
     loaded = false
   } catch (error) {
     console.warn('Erro ao descarregar sons:', error)
