@@ -1,4 +1,5 @@
-import { View, SafeAreaView } from 'react-native'
+import { View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { useStopwatch } from '../../hooks/useStopwatch'
 import { useKeepAwake } from '../../hooks/useKeepAwake'
 import { TimerDisplay } from '../../components/timer/TimerDisplay'
