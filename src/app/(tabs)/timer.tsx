@@ -1,4 +1,5 @@
-import { SafeAreaView, Text, View, Pressable } from 'react-native'
+import { Text, View, Pressable } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useCountdown } from '../../hooks/useCountdown'
 import { useKeepAwake } from '../../hooks/useKeepAwake'
@@ -6,7 +7,12 @@ import { CircularProgress } from '../../components/timer/CircularProgress'
 import { TimerDisplay } from '../../components/timer/TimerDisplay'
 import { TimerControls } from '../../components/timer/TimerControls'
 import { loadSounds, playBeep, playFight } from '../../lib/audio/sounds'
-import { deleteProfile, getProfiles, saveProfile, TimerProfile } from '../../lib/storage/profiles'
+import {
+  deleteProfile,
+  getProfiles,
+  saveProfile,
+  TimerProfile,
+} from '../../lib/storage/profiles'
 import { ProfileDrawer } from '../../components/profiles/ProfileDrawer'
 import { ProfileForm } from '../../components/profiles/ProfileForm'
 
@@ -88,19 +94,17 @@ export default function TimerScreen() {
     loadSounds()
   }, [])
 
+  const resetCountdown = countdown.reset
+  const startCountdown = countdown.startFrom
+
   useEffect(() => {
-    if (phase === 'idle') {
-      countdown.reset(0)
-      return
-    }
-    if (phase === 'finished') {
-      countdown.reset(0)
+    if (phase === 'idle' || phase === 'finished') {
+      resetCountdown(0)
       return
     }
     transitionRef.current = false
-    countdown.setTime(phaseSeconds)
-    countdown.start()
-  }, [phase, phaseSeconds, countdown])
+    startCountdown(phaseSeconds)
+  }, [phase, phaseSeconds, resetCountdown, startCountdown])
 
   const isWarning = useMemo(() => {
     if (!countdown.isRunning) {
@@ -175,7 +179,7 @@ export default function TimerScreen() {
       await saveProfile(profile)
       await loadProfiles()
     },
-    [loadProfiles]
+    [loadProfiles],
   )
 
   const handleDeleteProfile = useCallback(
@@ -183,12 +187,13 @@ export default function TimerScreen() {
       await deleteProfile(id)
       await loadProfiles()
     },
-    [loadProfiles]
+    [loadProfiles],
   )
 
   const phaseLabel = useMemo(() => {
     if (phase === 'prep') return 'Tempo inicial'
-    if (phase === 'fight') return `Round ${currentRound}${isInfinite ? ' (∞)' : ''}`
+    if (phase === 'fight')
+      return `Round ${currentRound}${isInfinite ? ' (∞)' : ''}`
     if (phase === 'rest') return 'Descanso'
     if (phase === 'finished') return 'Finalizado'
     return 'Configurado'
@@ -197,7 +202,7 @@ export default function TimerScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background">
       <View className="flex-1 items-center justify-center gap-6">
-        <Text className="text-muted-foreground font-sans">{phaseLabel}</Text>
+        <Text className="font-sans text-muted-foreground">{phaseLabel}</Text>
         <View className="items-center justify-center">
           <CircularProgress
             size={280}
@@ -208,7 +213,10 @@ export default function TimerScreen() {
             isPaused={!countdown.isRunning && countdown.isPaused}
           />
           <View className="absolute">
-            <TimerDisplay mode="countdown" seconds={phase === 'idle' ? fightSeconds : countdown.seconds} />
+            <TimerDisplay
+              mode="countdown"
+              seconds={phase === 'idle' ? fightSeconds : countdown.seconds}
+            />
           </View>
         </View>
         <TimerControls
@@ -219,11 +227,19 @@ export default function TimerScreen() {
           onReset={handleReset}
         />
         <View className="flex-row gap-2">
-          <Pressable className="rounded-lg bg-card px-4 py-2" onPress={() => setDrawerVisible(true)}>
-            <Text className="text-foreground font-sans">Perfis</Text>
+          <Pressable
+            className="rounded-lg bg-secondary px-4 py-2"
+            onPress={() => setDrawerVisible(true)}
+          >
+            <Text className="font-sans text-secondary-foreground">Perfis</Text>
           </Pressable>
-          <Pressable className="rounded-lg bg-card px-4 py-2" onPress={() => setFormVisible(true)}>
-            <Text className="text-foreground font-sans">Adicionar timer</Text>
+          <Pressable
+            className="rounded-lg bg-secondary px-4 py-2"
+            onPress={() => setFormVisible(true)}
+          >
+            <Text className="font-sans text-secondary-foreground">
+              Adicionar timer
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -238,7 +254,11 @@ export default function TimerScreen() {
         }}
         onDelete={handleDeleteProfile}
       />
-      <ProfileForm visible={formVisible} onClose={() => setFormVisible(false)} onSave={handleCreateProfile} />
+      <ProfileForm
+        visible={formVisible}
+        onClose={() => setFormVisible(false)}
+        onSave={handleCreateProfile}
+      />
     </SafeAreaView>
   )
 }
