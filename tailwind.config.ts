@@ -52,6 +52,11 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        progress: {
+          DEFAULT: 'hsl(var(--progress))',
+          warning: 'hsl(var(--progress-warning))',
+          danger: 'hsl(var(--progress-danger))',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',

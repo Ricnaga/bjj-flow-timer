@@ -29,11 +29,11 @@
   }
 
   .dark {
-    --background: 0 0% 3.9%;
+    --background: 0 0% 4%;
     --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
+    --card: 0 0% 8%;
     --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
+    --popover: 0 0% 8%;
     --popover-foreground: 0 0% 98%;
     --primary: 0 0% 98%;
     --primary-foreground: 0 0% 9%;
@@ -49,11 +49,14 @@
     --success-foreground: 144.9 80.4% 10%;
     --warning: 38 92% 50%;
     --warning-foreground: 48 96% 89%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
     --ring: 0 0% 83.1%;
+    --progress: 199 95% 65%;
+    --progress-warning: 38 92% 50%;
+    --progress-danger: 0 84% 60%;
   }
 }
 

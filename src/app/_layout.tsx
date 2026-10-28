@@ -34,7 +34,9 @@ export default function RootLayout() {
 
   return (
     <GluestackUIProvider config={config}>
-      <Stack screenOptions={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
+      </Stack>
     </GluestackUIProvider>
   )
 }

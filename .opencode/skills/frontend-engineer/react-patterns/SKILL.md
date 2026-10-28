@@ -19,10 +19,10 @@ Definir padrões de desenvolvimento e revisão de código React, garantindo comp
 
 ## 2. Agentes autorizados
 
-| Agente              | Papel                                                                        |
-| ------------------- | ---------------------------------------------------------------------------- |
+| Agente | Papel |
+|---|---|
 | `frontend-engineer` | Consulta antes de implementar ou refatorar componentes/funcionalidades React |
-| `staff-engineer`    | Consulta durante revisões e auditorias de código React                       |
+| `staff-engineer` | Consulta durante revisões e auditorias de código React |
 
 > **Acesso**: por contexto (trigger no `description`) — não há bloqueio por permissão. A pasta em que a skill vive indica **ownership** (quem a mantém), não audience. Agent fora do domínio deve delegar ao dono.
 
@@ -102,10 +102,10 @@ Todo estado de React deve ser **fortemente tipado**.
 
 ```tsx
 // ❌ Negativo: anotação desnecessária em literal trivial
-const [name, setName] = useState<string>('')
+const [name, setName] = useState<string>("")
 
 // ✅ Positivo: inferência suficiente em literal trivial
-const [name, setName] = useState('')
+const [name, setName] = useState("")
 
 // ✅ Positivo: anotação necessária (inferência insuficiente)
 const [items, setItems] = useState<Item[]>([])
@@ -116,23 +116,23 @@ const [user, setUser] = useState<User | null>(null)
 
 Framework de decisão — referência, não regra absoluta:
 
-| Situação                                                                                                | Escolha                                                                 |
-| ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| Valor atômico e independente (`string`, `number`, `boolean`, `string \| null`)                          | `useState` simples                                                      |
-| Vários campos **relacionados da mesma funcionalidade/componente**, atualizados parcialmente em conjunto | **1 `useState` com objeto tipado** (evita dezenas de `useState`)        |
-| Máquina de estados (loading / success / error) ou transições complexas                                  | `useReducer`                                                            |
-| Atualização depende do valor anterior **e** de regra de negócio                                         | `useReducer`                                                            |
-| Handler precisa ler outro estado para decidir, ou executa 2+ `setState` simultâneos (risco de clobber)  | `useReducer`                                                            |
-| Estado tem ações nomeáveis e semânticas (SUBMIT, RESET, SELECT)                                         | `useReducer`                                                            |
-| Apenas derivação simples de valores pré-existentes                                                      | `computed`-like: extrair antes de criar estado (`useMemo` não é estado) |
+| Situação | Escolha |
+|---|---|
+| Valor atômico e independente (`string`, `number`, `boolean`, `string \| null`) | `useState` simples |
+| Vários campos **relacionados da mesma funcionalidade/componente**, atualizados parcialmente em conjunto | **1 `useState` com objeto tipado** (evita dezenas de `useState`) |
+| Máquina de estados (loading / success / error) ou transições complexas | `useReducer` |
+| Atualização depende do valor anterior **e** de regra de negócio | `useReducer` |
+| Handler precisa ler outro estado para decidir, ou executa 2+ `setState` simultâneos (risco de clobber) | `useReducer` |
+| Estado tem ações nomeáveis e semânticas (SUBMIT, RESET, SELECT) | `useReducer` |
+| Apenas derivação simples de valores pré-existentes | `computed`-like: extrair antes de criar estado (`useMemo` não é estado) |
 
 **Heurística:** se a atualização de um campo depende de outro, ou existe um conjunto de ações nomeáveis → `useReducer`; se são campos independentes de um mesmo formulário/entidade → `useState` com objeto tipado (um único `setState` parcial).
 
 ```tsx
 // ❌ Negativo: muitos useState soltos para estados correlacionados
-const [name, setName] = useState('')
-const [email, setEmail] = useState('')
-const [role, setRole] = useState<Role>('user')
+const [name, setName] = useState("")
+const [email, setEmail] = useState("")
+const [role, setRole] = useState<Role>("user")
 // → 3 setters, states que não evoluem juntos, difícil agrupar transições
 
 // ✅ Positivo: 1 useState com objeto fortemente tipado
@@ -144,13 +144,13 @@ interface UserFormState {
 
 function UserForm() {
   const [state, setState] = useState<UserFormState>({
-    name: '',
-    email: '',
-    role: 'user',
+    name: "",
+    email: "",
+    role: "user",
   })
 
   const updateField = (partial: Partial<UserFormState>) => {
-    setState((prev) => ({ ...prev, ...partial }))
+    setState(prev => ({ ...prev, ...partial }))
   }
   // ...
 }
@@ -164,22 +164,22 @@ export interface UserFormState {
   name: string
   email: string
   role: Role
-  status: 'idle' | 'submitting' | 'success' | 'error'
+  status: "idle" | "submitting" | "success" | "error"
   error: string | null
 }
 
 export type UserFormAction =
-  | { type: 'FIELD_UPDATED'; field: keyof UserFormState; value: string }
-  | { type: 'SUBMIT_START' }
-  | { type: 'SUBMIT_SUCCESS' }
-  | { type: 'SUBMIT_ERROR'; error: string }
-  | { type: 'RESET' }
+  | { type: "FIELD_UPDATED"; field: keyof UserFormState; value: string }
+  | { type: "SUBMIT_START" }
+  | { type: "SUBMIT_SUCCESS" }
+  | { type: "SUBMIT_ERROR"; error: string }
+  | { type: "RESET" }
 
 export const initialUserFormState: UserFormState = {
-  name: '',
-  email: '',
-  role: 'user',
-  status: 'idle',
+  name: "",
+  email: "",
+  role: "user",
+  status: "idle",
   error: null,
 }
 
@@ -188,16 +188,16 @@ export function userFormReducer(
   action: UserFormAction,
 ): UserFormState {
   switch (action.type) {
-    case 'FIELD_UPDATED':
-      if (action.field === 'role') return state
+    case "FIELD_UPDATED":
+      if (action.field === "role") return state
       return { ...state, [action.field]: action.value }
-    case 'SUBMIT_START':
-      return { ...state, status: 'submitting', error: null }
-    case 'SUBMIT_SUCCESS':
-      return { ...state, status: 'success' }
-    case 'SUBMIT_ERROR':
-      return { ...state, status: 'error', error: action.error }
-    case 'RESET':
+    case "SUBMIT_START":
+      return { ...state, status: "submitting", error: null }
+    case "SUBMIT_SUCCESS":
+      return { ...state, status: "success" }
+    case "SUBMIT_ERROR":
+      return { ...state, status: "error", error: action.error }
+    case "RESET":
       return initialUserFormState
     default:
       return state
@@ -207,8 +207,8 @@ export function userFormReducer(
 
 ```tsx
 // UserForm.tsx — uso
-import { useReducer } from 'react'
-import { initialUserFormState, userFormReducer } from './UserForm.reducer'
+import { useReducer } from "react"
+import { initialUserFormState, userFormReducer } from "./UserForm.reducer"
 
 function UserForm() {
   const [state, dispatch] = useReducer(userFormReducer, initialUserFormState)
@@ -233,7 +233,7 @@ components/
 function List({ items }: { items: Item[] }) {
   return (
     <ul>
-      {items.map((item) => (
+      {items.map(item => (
         <li key={item.id}>{item.name}</li>
       ))}
     </ul>
@@ -246,6 +246,8 @@ function List({ items }: { items: Item[] }) {
 - ❌ Nunca usar `Math.random()` como key.
 
 ### 4.6 Conditional rendering
+
+> Regras genéricas de ramificação (evitar `else`, guard clauses, object lookup, `switch`) vivem na skill **`control-flow`**. Esta seção cobre apenas o que é específico de React/JSX.
 
 Preferir **early return** quando melhorar a legibilidade. `&&` / ternário apenas para casos simples.
 
@@ -323,21 +325,15 @@ Toda lógica computacional (filter, map com lógica complexa, cálculos) deve fi
 // ❌ Negativo: lógica no meio do JSX
 return (
   <div>
-    {items
-      .filter((i) => i.active)
-      .map((i) => (
-        <Item key={i.id} {...i} />
-      ))}
+    {items.filter(i => i.active).map(i => <Item key={i.id} {...i} />)}
   </div>
 )
 
 // ✅ Positivo: lógica antes do return
-const activeItems = items.filter((i) => i.active)
+const activeItems = items.filter(i => i.active)
 return (
   <div>
-    {activeItems.map((i) => (
-      <Item key={i.id} {...i} />
-    ))}
+    {activeItems.map(i => <Item key={i.id} {...i} />)}
   </div>
 )
 ```
@@ -350,13 +346,21 @@ return isVisible && <Component />
 
 // ✅ Valor booleano com fallback
 const isActive = isEnabled ?? false
-const label = displayName || 'Sem nome'
+const label = displayName || "Sem nome"
 
 // ❌ Negativo: ternário com fallback null no meio do JSX
-return <div>{isLoaded ? <Content /> : null}</div>
+return (
+  <div>
+    {isLoaded ? <Content /> : null}
+  </div>
+)
 
 // ✅ Positivo: &&
-return <div>{isLoaded && <Content />}</div>
+return (
+  <div>
+    {isLoaded && <Content />}
+  </div>
+)
 ```
 
 ### 4.7 Performance
@@ -365,9 +369,7 @@ return <div>{isLoaded && <Content />}</div>
 
 ```tsx
 // ✅ Positivo: memo quando re-render é custoso e verificado
-const ExpensiveComponent = React.memo(function ExpensiveComponent({
-  data,
-}: Props) {
+const ExpensiveComponent = React.memo(function ExpensiveComponent({ data }: Props) {
   return <div>{/* renderização custosa */}</div>
 })
 ```
@@ -412,11 +414,11 @@ Quando a lógica decide comportamento por enum/estado com múltiplos branches, u
 ```tsx
 // ✅ Positivo: switch explícito em reducer
 switch (action.type) {
-  case 'SUBMIT_START':
+  case "SUBMIT_START":
     return { ...state, loading: true, error: null }
-  case 'SUBMIT_SUCCESS':
+  case "SUBMIT_SUCCESS":
     return { ...state, loading: false }
-  case 'SUBMIT_ERROR':
+  case "SUBMIT_ERROR":
     return { ...state, loading: false, error: action.error }
   default:
     return state
@@ -447,24 +449,24 @@ Estado de carregamento/erro/sucesso controlado por `setLoading`/`setError` solto
 
 Tabela condição → ação. Referência, não regra absoluta:
 
-| Condição observada                                                         | Ação sugerida                                              |
-| -------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| Componente muito extenso ou com muitas responsabilidades                   | Extrair subcomponentes / hooks / composição                |
-| Muitas props (esp. booleanas)                                              | Objeto tipado, Compound Component ou `children`            |
-| Ternário aninhado (3+ níveis)                                              | Early return, mapping object, subcomponente                |
-| Ternário no meio do JSX                                                    | Componentizar + return early                               |
-| Lógica/variáveis no meio do JSX                                            | Extrair lógica antes do return                             |
-| Várias variantes de renderização por estado                                | `Record<Estado, Componente>` (mapping object)              |
-| Decisão por enum/estado com vários branches                                | `switch` (legibilidade > ternário encadeado)               |
-| Lógica de negócio dentro do JSX/componente                                 | Mover para hook/service (componente apresentacional)       |
-| Muitos `useState` correlacionados, campos da mesma feature                 | 1 `useState` com objeto tipado ou `useReducer` (ver 4.4.2) |
-| Estados booleanos contraditórios (loading/error soltos)                    | `status` único tipado em objeto/reducer                    |
+| Condição observada | Ação sugerida |
+|---|---|
+| Componente muito extenso ou com muitas responsabilidades | Extrair subcomponentes / hooks / composição |
+| Muitas props (esp. booleanas) | Objeto tipado, Compound Component ou `children` |
+| Ternário aninhado (3+ níveis) | Early return, mapping object, subcomponente |
+| Ternário no meio do JSX | Componentizar + return early |
+| Lógica/variáveis no meio do JSX | Extrair lógica antes do return |
+| Várias variantes de renderização por estado | `Record<Estado, Componente>` (mapping object) |
+| Decisão por enum/estado com vários branches | `switch` (legibilidade > ternário encadeado) |
+| Lógica de negócio dentro do JSX/componente | Mover para hook/service (componente apresentacional) |
+| Muitos `useState` correlacionados, campos da mesma feature | 1 `useState` com objeto tipado ou `useReducer` (ver 4.4.2) |
+| Estados booleanos contraditórios (loading/error soltos) | `status` único tipado em objeto/reducer |
 | Transições complexas / ações nomeáveis / update depende do estado anterior | `useReducer` com discriminated union (`<nome>.reducer.ts`) |
-| `useState`/`useReducer` sem tipo explícito no estado ou actions            | Tipar `State`/`Action`/`initialState` (ver 4.4.1)          |
-| Extração sem 2+ usos reais                                                 | **Não extrair** (YAGNI / abstração prematura)              |
-| `useMemo`/`useCallback` sem problema mensurável                            | **Não otimizar preventivamente**                           |
-| Key por index quando a ordem pode mudar                                    | Corrigir para ID estável                                   |
-| Prop drilling excessivo                                                    | Context / composição / colocation de estado                |
+| `useState`/`useReducer` sem tipo explícito no estado ou actions | Tipar `State`/`Action`/`initialState` (ver 4.4.1) |
+| Extração sem 2+ usos reais | **Não extrair** (YAGNI / abstração prematura) |
+| `useMemo`/`useCallback` sem problema mensurável | **Não otimizar preventivamente** |
+| Key por index quando a ordem pode mudar | Corrigir para ID estável |
+| Prop drilling excessivo | Context / composição / colocation de estado |
 
 ## 7. Exemplos Positivos
 
@@ -501,6 +503,7 @@ Consolidado (também interleaved nas seções 4 e 5):
 
 ## 9. Referências cruzadas
 
+- **`control-flow`** — regras genéricas de ramificação: evitar `else`, guard clauses, object lookup, `switch`.
 - **`nextjs-patterns`** — Server vs Client Components, Suspense, `use server` (web).
 - **`vue-patterns`** — alternativa Vue 3 (+ Nuxt) quando o projeto for Vue em vez de React.
 - **`svelte-patterns`** — alternativa Svelte 5 (runes) quando o projeto for Svelte.
@@ -508,3 +511,4 @@ Consolidado (também interleaved nas seções 4 e 5):
 - **`react-native-patterns`** — componentes nativos, FlatList, StyleSheet.
 - **`frontend-patterns`** — consistência visual, UI Kit, semântica, acessibilidade, responsividade.
 - **`staff-engineer/code-review-checklist`** — checklist genérico de revisão (cross-cutting).
+
