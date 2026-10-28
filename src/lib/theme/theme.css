@@ -29,11 +29,11 @@
   }
 
   .dark {
-    --background: 0 0% 4%;
+    --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
-    --card: 0 0% 8%;
+    --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;
-    --popover: 0 0% 8%;
+    --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
     --primary: 0 0% 98%;
     --primary-foreground: 0 0% 9%;
@@ -49,10 +49,10 @@
     --success-foreground: 144.9 80.4% 10%;
     --warning: 38 92% 50%;
     --warning-foreground: 48 96% 89%;
-    --destructive: 0 84% 60%;
+    --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 16%;
-    --input: 0 0% 16%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
     --ring: 0 0% 83.1%;
     --progress: 199 95% 65%;
     --progress-warning: 38 92% 50%;
@@ -62,10 +62,12 @@
 
 :root {
   --font-sans: 'Exo2_400Regular', system-ui, sans-serif;
-  --font-display: 'Exo2_600SemiBold', 'Exo2_700Bold', 'Exo2_400Regular', system-ui, sans-serif;
+  --font-display:
+    'Exo2_600SemiBold', 'Exo2_700Bold', 'Exo2_400Regular', system-ui, sans-serif;
 }
 
 .dark {
   --font-sans: 'Exo2_400Regular', system-ui, sans-serif;
-  --font-display: 'Exo2_600SemiBold', 'Exo2_700Bold', 'Exo2_400Regular', system-ui, sans-serif;
+  --font-display:
+    'Exo2_600SemiBold', 'Exo2_700Bold', 'Exo2_400Regular', system-ui, sans-serif;
 }

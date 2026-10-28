@@ -2,7 +2,10 @@ import { GluestackUIProvider } from '@gluestack-ui/themed'
 import { config } from '@gluestack-ui/config'
 import { Stack } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
+import { StatusBar } from 'expo-status-bar'
 import { useFonts } from 'expo-font'
+import { colorScheme } from 'nativewind'
+import { View } from 'react-native'
 import {
   Exo2_400Regular,
   Exo2_500Medium,
@@ -23,6 +26,10 @@ export default function RootLayout() {
   })
 
   useEffect(() => {
+    colorScheme.set('dark')
+  }, [])
+
+  useEffect(() => {
     if (fontsLoaded || fontError) {
       SplashScreen.hideAsync()
     }
@@ -33,10 +40,18 @@ export default function RootLayout() {
   }
 
   return (
-    <GluestackUIProvider config={config}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-      </Stack>
-    </GluestackUIProvider>
+    <View className="flex-1 bg-background">
+      <GluestackUIProvider config={config} colorMode="dark">
+        <StatusBar style="light" />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: '#0a0a0a' },
+          }}
+        >
+          <Stack.Screen name="(tabs)" />
+        </Stack>
+      </GluestackUIProvider>
+    </View>
   )
 }
