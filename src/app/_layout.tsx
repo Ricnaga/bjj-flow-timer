@@ -1,7 +1,7 @@
 import { GluestackUIProvider } from '@gluestack-ui/themed'
 import { config } from '@gluestack-ui/config'
 import { Stack } from 'expo-router'
-import '../../global.css'
+import '../lib/theme/index.css'
 
 export default function RootLayout() {
   return (
