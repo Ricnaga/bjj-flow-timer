@@ -52,13 +52,15 @@ export function CircularProgress({
     }
   })
 
-  const strokeColor = isWarning ? 'hsl(var(--progress-warning))' : 'hsl(var(--progress))'
+  const strokeColor = isWarning
+    ? 'hsl(var(--progress-warning))'
+    : 'hsl(var(--progress))'
   const opacity = isPaused ? 0.6 : 1
 
   return (
     <View style={{ width: size, height: size, opacity }}>
       <Svg width={size} height={size}>
-        <G rotation="-90" origin={`${center}, ${center}`}>
+        <G transform={`rotate(-90 ${center} ${center})`}>
           <Circle
             cx={center}
             cy={center}
