@@ -56,3 +56,13 @@
     --ring: 0 0% 83.1%;
   }
 }
+
+:root {
+  --font-sans: 'Exo2_400Regular', system-ui, sans-serif;
+  --font-display: 'Exo2_600SemiBold', 'Exo2_700Bold', 'Exo2_400Regular', system-ui, sans-serif;
+}
+
+.dark {
+  --font-sans: 'Exo2_400Regular', system-ui, sans-serif;
+  --font-display: 'Exo2_600SemiBold', 'Exo2_700Bold', 'Exo2_400Regular', system-ui, sans-serif;
+}

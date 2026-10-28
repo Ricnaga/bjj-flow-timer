@@ -49,3 +49,16 @@ export const theme = {
 } as const
 
 export { theme as colors }
+
+export const typography = {
+  fontFamily: {
+    sans: ['Exo2_400Regular', 'system-ui', 'sans-serif'],
+    display: ['Exo2_600SemiBold', 'Exo2_700Bold', 'Exo2_400Regular', 'system-ui', 'sans-serif'],
+  },
+  fontWeight: {
+    regular: '400',
+    medium: '500',
+    semibold: '600',
+    bold: '700',
+  },
+} as const
