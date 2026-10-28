@@ -4,14 +4,19 @@ import { useEffect } from 'react'
 export function useKeepAwake(enabled: boolean) {
   useEffect(() => {
     if (!enabled) {
-      deactivateKeepAwake()
       return
     }
 
-    activateKeepAwakeAsync()
+    let disposed = false
+    const activation = activateKeepAwakeAsync().catch(() => undefined)
 
     return () => {
-      deactivateKeepAwake()
+      disposed = true
+      activation.then(() => {
+        if (disposed) {
+          deactivateKeepAwake().catch(() => undefined)
+        }
+      })
     }
   }, [enabled])
 }
