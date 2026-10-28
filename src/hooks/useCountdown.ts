@@ -6,7 +6,10 @@ interface UseCountdownOptions {
   onLastFive?: (seconds: number) => void
 }
 
-export function useCountdown(initialSeconds: number, options: UseCountdownOptions = {}) {
+export function useCountdown(
+  initialSeconds: number,
+  options: UseCountdownOptions = {},
+) {
   const { onTick, onFinish, onLastFive } = options
 
   const [seconds, setSeconds] = useState(initialSeconds)
@@ -64,14 +67,15 @@ export function useCountdown(initialSeconds: number, options: UseCountdownOption
   const reset = useCallback(
     (nextSeconds?: number) => {
       clearTimer()
-      const value = typeof nextSeconds === 'number' ? nextSeconds : initialSeconds
+      const value =
+        typeof nextSeconds === 'number' ? nextSeconds : initialSeconds
       setSeconds(value)
       setTotalSeconds(value)
       setIsRunning(false)
       setIsPaused(false)
       setIsFinished(false)
     },
-    [clearTimer, initialSeconds]
+    [clearTimer, initialSeconds],
   )
 
   const restart = useCallback(() => {
@@ -82,14 +86,32 @@ export function useCountdown(initialSeconds: number, options: UseCountdownOption
     setIsFinished(false)
   }, [clearTimer, totalSeconds])
 
-  const setTime = useCallback((nextSeconds: number) => {
-    clearTimer()
-    setSeconds(nextSeconds)
-    setTotalSeconds(nextSeconds)
-    setIsRunning(false)
-    setIsPaused(false)
-    setIsFinished(false)
-  }, [clearTimer])
+  const startFrom = useCallback(
+    (nextSeconds: number) => {
+      if (nextSeconds <= 0) {
+        return
+      }
+      clearTimer()
+      setSeconds(nextSeconds)
+      setTotalSeconds(nextSeconds)
+      setIsRunning(true)
+      setIsPaused(false)
+      setIsFinished(false)
+    },
+    [clearTimer],
+  )
+
+  const setTime = useCallback(
+    (nextSeconds: number) => {
+      clearTimer()
+      setSeconds(nextSeconds)
+      setTotalSeconds(nextSeconds)
+      setIsRunning(false)
+      setIsPaused(false)
+      setIsFinished(false)
+    },
+    [clearTimer],
+  )
 
   useEffect(() => {
     if (!isRunning) {
@@ -147,6 +169,7 @@ export function useCountdown(initialSeconds: number, options: UseCountdownOption
     pause,
     reset,
     restart,
+    startFrom,
     setTime,
   }
 }
