@@ -1,18 +1,16 @@
 import { Text, View } from 'react-native'
 import { formatCountdown, formatStopwatch } from '../../utils/time'
 
-interface TimerDisplayProps {
-  mode: 'countdown' | 'stopwatch'
-  seconds?: number
-  elapsedMs?: number
-}
+type TimerDisplayProps =
+  | { mode: 'countdown'; seconds: number }
+  | { mode: 'stopwatch'; elapsedMs: number }
 
-export function TimerDisplay({ mode, seconds = 0, elapsedMs = 0 }: TimerDisplayProps) {
-  if (mode === 'stopwatch') {
+export function TimerDisplay(props: TimerDisplayProps) {
+  if (props.mode === 'stopwatch') {
     return (
       <View className="items-center justify-center">
-        <Text className="font-display text-6xl text-foreground tabular-nums">
-          {formatStopwatch(elapsedMs)}
+        <Text className="font-display text-6xl tabular-nums text-foreground">
+          {formatStopwatch(props.elapsedMs)}
         </Text>
       </View>
     )
@@ -20,8 +18,8 @@ export function TimerDisplay({ mode, seconds = 0, elapsedMs = 0 }: TimerDisplayP
 
   return (
     <View className="items-center justify-center">
-      <Text className="font-display text-7xl text-foreground tabular-nums">
-        {formatCountdown(seconds)}
+      <Text className="font-display text-7xl tabular-nums text-foreground">
+        {formatCountdown(props.seconds)}
       </Text>
     </View>
   )

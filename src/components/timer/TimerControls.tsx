@@ -1,35 +1,52 @@
 import { Pressable, Text, View } from 'react-native'
+import type { TimerStatus } from '../../hooks/timer.types'
 
 interface TimerControlsProps {
-  isRunning: boolean
-  isPaused: boolean
+  status: TimerStatus
   onStart: () => void
   onPause: () => void
   onReset: () => void
 }
 
-export function TimerControls({ isRunning, isPaused, onStart, onPause, onReset }: TimerControlsProps) {
-  if (isRunning) {
+export function TimerControls({
+  status,
+  onStart,
+  onPause,
+  onReset,
+}: TimerControlsProps) {
+  if (status === 'running') {
     return (
       <View className="flex-row gap-3">
-        <Pressable className="rounded-lg bg-secondary px-6 py-3" onPress={onPause}>
-          <Text className="text-secondary-foreground font-sans">Pausar</Text>
+        <Pressable
+          className="rounded-lg bg-secondary px-6 py-3"
+          onPress={onPause}
+        >
+          <Text className="font-sans text-secondary-foreground">Pausar</Text>
         </Pressable>
-        <Pressable className="rounded-lg bg-tertiary px-6 py-3" onPress={onReset}>
-          <Text className="text-tertiary-foreground font-sans">Resetar</Text>
+        <Pressable
+          className="rounded-lg bg-tertiary px-6 py-3"
+          onPress={onReset}
+        >
+          <Text className="font-sans text-tertiary-foreground">Resetar</Text>
         </Pressable>
       </View>
     )
   }
 
-  if (isPaused) {
+  if (status === 'paused') {
     return (
       <View className="flex-row gap-3">
-        <Pressable className="rounded-lg bg-primary px-6 py-3" onPress={onStart}>
-          <Text className="text-primary-foreground font-sans">Continuar</Text>
+        <Pressable
+          className="rounded-lg bg-primary px-6 py-3"
+          onPress={onStart}
+        >
+          <Text className="font-sans text-primary-foreground">Continuar</Text>
         </Pressable>
-        <Pressable className="rounded-lg bg-tertiary px-6 py-3" onPress={onReset}>
-          <Text className="text-tertiary-foreground font-sans">Resetar</Text>
+        <Pressable
+          className="rounded-lg bg-tertiary px-6 py-3"
+          onPress={onReset}
+        >
+          <Text className="font-sans text-tertiary-foreground">Resetar</Text>
         </Pressable>
       </View>
     )
@@ -38,10 +55,10 @@ export function TimerControls({ isRunning, isPaused, onStart, onPause, onReset }
   return (
     <View className="flex-row gap-3">
       <Pressable className="rounded-lg bg-primary px-6 py-3" onPress={onStart}>
-        <Text className="text-primary-foreground font-sans">Iniciar</Text>
+        <Text className="font-sans text-primary-foreground">Iniciar</Text>
       </Pressable>
       <Pressable className="rounded-lg bg-tertiary px-6 py-3" onPress={onReset}>
-        <Text className="text-tertiary-foreground font-sans">Resetar</Text>
+        <Text className="font-sans text-tertiary-foreground">Resetar</Text>
       </Pressable>
     </View>
   )
