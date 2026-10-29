@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { z } from 'zod'
 import { STORAGE_KEYS } from './keys'
 
 export interface TimerProfile {
@@ -13,6 +14,18 @@ export interface TimerProfile {
   updatedAt: number
 }
 
+const timerProfileSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  prepTimeSeconds: z.number().int().min(0).max(600),
+  fightTimeSeconds: z.number().int().min(1).max(3600),
+  restTimeSeconds: z.number().int().min(0).max(600),
+  rounds: z.number().int().min(0).max(99),
+  isInfinite: z.boolean(),
+  createdAt: z.number(),
+  updatedAt: z.number(),
+})
+
 export async function getProfiles(): Promise<TimerProfile[]> {
   try {
     const raw = await AsyncStorage.getItem(STORAGE_KEYS.TIMER_PROFILES)
@@ -23,14 +36,21 @@ export async function getProfiles(): Promise<TimerProfile[]> {
     if (!Array.isArray(parsed)) {
       return []
     }
-    return parsed as TimerProfile[]
+    const result = z.array(timerProfileSchema).safeParse(parsed)
+    if (!result.success) {
+      console.warn('Perfis com formato inválido, descartando.')
+      return []
+    }
+    return result.data
   } catch (error) {
     console.warn('Erro ao carregar perfis:', error)
     return []
   }
 }
 
-export async function saveProfile(profile: TimerProfile): Promise<TimerProfile[]> {
+export async function saveProfile(
+  profile: TimerProfile,
+): Promise<TimerProfile[]> {
   try {
     const profiles = await getProfiles()
     const existingIndex = profiles.findIndex((item) => item.id === profile.id)
@@ -41,7 +61,10 @@ export async function saveProfile(profile: TimerProfile): Promise<TimerProfile[]
         ...profile,
         updatedAt: Date.now(),
       }
-      await AsyncStorage.setItem(STORAGE_KEYS.TIMER_PROFILES, JSON.stringify(updated))
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.TIMER_PROFILES,
+        JSON.stringify(updated),
+      )
       return updated
     }
 
@@ -51,7 +74,10 @@ export async function saveProfile(profile: TimerProfile): Promise<TimerProfile[]
       updatedAt: Date.now(),
     }
     const updated = [...profiles, created]
-    await AsyncStorage.setItem(STORAGE_KEYS.TIMER_PROFILES, JSON.stringify(updated))
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.TIMER_PROFILES,
+      JSON.stringify(updated),
+    )
     return updated
   } catch (error) {
     console.warn('Erro ao salvar perfil:', error)
@@ -63,7 +89,10 @@ export async function deleteProfile(id: string): Promise<TimerProfile[]> {
   try {
     const profiles = await getProfiles()
     const updated = profiles.filter((item) => item.id !== id)
-    await AsyncStorage.setItem(STORAGE_KEYS.TIMER_PROFILES, JSON.stringify(updated))
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.TIMER_PROFILES,
+      JSON.stringify(updated),
+    )
     return updated
   } catch (error) {
     console.warn('Erro ao deletar perfil:', error)
