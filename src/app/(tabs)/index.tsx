@@ -5,8 +5,8 @@ import { TimerDisplay } from '../../components/timer/TimerDisplay'
 import { TimerControls } from '../../components/timer/TimerControls'
 import { ProfileDrawer } from './_components/ProfileDrawer'
 import { ProfileForm } from './_components/ProfileForm'
-import { useBjjTimer } from '../../hooks/useBjjTimer'
-import { useProfiles } from '../../hooks/useProfiles'
+import { useBjjTimer } from './_hooks/useBjjTimer'
+import { useProfiles } from './_hooks/useProfiles'
 
 export default function TimerScreen() {
   const {
