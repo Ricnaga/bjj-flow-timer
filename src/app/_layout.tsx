@@ -1,18 +1,18 @@
-import { GluestackUIProvider } from '@gluestack-ui/themed'
-import { config } from '@gluestack-ui/config'
-import { Stack } from 'expo-router'
-import * as SplashScreen from 'expo-splash-screen'
-import { StatusBar } from 'expo-status-bar'
-import { useFonts } from 'expo-font'
-import { colorScheme } from 'nativewind'
-import { View } from 'react-native'
 import {
   Exo2_400Regular,
   Exo2_500Medium,
   Exo2_600SemiBold,
   Exo2_700Bold,
 } from '@expo-google-fonts/exo-2'
+import { config } from '@gluestack-ui/config'
+import { GluestackUIProvider } from '@gluestack-ui/themed'
+import { useFonts } from 'expo-font'
+import { Stack } from 'expo-router'
+import * as SplashScreen from 'expo-splash-screen'
+import { StatusBar } from 'expo-status-bar'
+import { colorScheme } from 'nativewind'
 import { useEffect } from 'react'
+import { View } from 'react-native'
 import '../lib/theme/index.css'
 
 SplashScreen.preventAutoHideAsync()

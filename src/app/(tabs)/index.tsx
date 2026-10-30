@@ -1,12 +1,12 @@
-import { Text, View, Pressable } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { CircularProgress } from '../../components/timer/CircularProgress'
-import { TimerDisplay } from '../../components/timer/TimerDisplay'
 import { TimerControls } from '../../components/timer/TimerControls'
-import { ProfileDrawer } from './_components/ProfileDrawer'
-import { ProfileForm } from './_components/ProfileForm'
-import { useBjjTimer } from './_hooks/useBjjTimer'
-import { useProfiles } from './_hooks/useProfiles'
+import { TimerDisplay } from '../../components/timer/TimerDisplay'
+import { ProfileDrawer } from '../../features/timer/components/ProfileDrawer'
+import { ProfileForm } from '../../features/timer/components/ProfileForm'
+import { useBjjTimer } from '../../features/timer/hooks/useBjjTimer'
+import { useProfiles } from '../../features/timer/hooks/useProfiles'
 
 export default function TimerScreen() {
   const {

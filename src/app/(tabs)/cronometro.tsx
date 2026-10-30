@@ -1,9 +1,9 @@
 import { View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { TimerControls } from '../../components/timer/TimerControls'
+import { TimerDisplay } from '../../components/timer/TimerDisplay'
 import { useStopwatch } from '../../hooks/stopwatch/useStopwatch'
 import { useKeepAwake } from '../../hooks/useKeepAwake'
-import { TimerDisplay } from '../../components/timer/TimerDisplay'
-import { TimerControls } from '../../components/timer/TimerControls'
 
 export default function CronometroScreen() {
   const { elapsedMs, status, start, pause, reset } = useStopwatch()
