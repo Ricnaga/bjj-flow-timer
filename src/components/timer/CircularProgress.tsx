@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { View } from 'react-native'
+import { useColorScheme, View } from 'react-native'
 import Animated, {
   useAnimatedProps,
   useDerivedValue,
@@ -26,6 +26,7 @@ export function CircularProgress({
   isWarning,
   isPaused,
 }: CircularProgressProps) {
+  const colorScheme = useColorScheme()
   const radius = useMemo(() => (size - strokeWidth) / 2, [size, strokeWidth])
   const circumference = useMemo(() => 2 * Math.PI * radius, [radius])
   const center = useMemo(() => size / 2, [size])
@@ -52,9 +53,13 @@ export function CircularProgress({
     }
   })
 
+  const trackColor =
+    colorScheme === 'dark' ? 'hsl(0, 0%, 14.9%)' : 'hsl(0, 0%, 89.8%)'
   const strokeColor = isWarning
-    ? 'hsl(var(--progress-warning))'
-    : 'hsl(var(--progress))'
+    ? 'hsl(38, 92%, 50%)'
+    : colorScheme === 'dark'
+      ? 'hsl(199, 95%, 65%)'
+      : 'hsl(199, 95%, 65%)'
   const opacity = isPaused ? 0.6 : 1
 
   return (
@@ -65,7 +70,7 @@ export function CircularProgress({
             cx={center}
             cy={center}
             r={radius}
-            stroke="hsl(var(--border))"
+            stroke={trackColor}
             strokeWidth={strokeWidth}
             fill="transparent"
           />
