@@ -1,12 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { FlatList, Text, View } from 'react-native'
-
-type ViewTokenType = {
-  item: number
-  key: string
-  index: number | null
-  isViewable: boolean
-}
+import { ScrollView, Text, View } from 'react-native'
 
 interface TimeWheelPickerProps {
   label: string
@@ -21,6 +14,7 @@ interface TimeWheelPickerProps {
 const ITEM_HEIGHT = 36
 const VISIBLE_ITEMS = 3
 const PICKER_HEIGHT = ITEM_HEIGHT * VISIBLE_ITEMS
+const PADDING_VERTICAL = ITEM_HEIGHT * ((VISIBLE_ITEMS - 1) / 2)
 
 function createRange(max: number): number[] {
   const result: number[] = []
@@ -46,11 +40,18 @@ export function TimeWheelPicker({
   const minuteList = useMemo(() => createRange(maxMinutes), [maxMinutes])
   const secondList = useMemo(() => createRange(maxSeconds), [maxSeconds])
 
-  const minuteListRef = useRef<FlatList<number>>(null)
-  const secondListRef = useRef<FlatList<number>>(null)
+  const minuteScrollRef = useRef<any>(null)
+  const secondScrollRef = useRef<any>(null)
   const [isInitializing, setIsInitializing] = useState(true)
   const lastMinuteIndex = useRef(0)
   const lastSecondIndex = useRef(0)
+
+  const clampIndex = useCallback((index: number, listLength: number) => {
+    if (listLength <= 0) return 0
+    if (index < 0) return 0
+    if (index >= listLength) return listLength - 1
+    return index
+  }, [])
 
   useEffect(() => {
     const minuteIndex = minuteList.indexOf(minutes)
@@ -59,12 +60,12 @@ export function TimeWheelPicker({
     const safeSecondIndex = secondIndex >= 0 ? secondIndex : 0
 
     const timeout = setTimeout(() => {
-      minuteListRef.current?.scrollToIndex({
-        index: safeMinuteIndex,
+      minuteScrollRef.current?.scrollTo({
+        y: safeMinuteIndex * ITEM_HEIGHT,
         animated: false,
       })
-      secondListRef.current?.scrollToIndex({
-        index: safeSecondIndex,
+      secondScrollRef.current?.scrollTo({
+        y: safeSecondIndex * ITEM_HEIGHT,
         animated: false,
       })
       lastMinuteIndex.current = safeMinuteIndex
@@ -75,13 +76,7 @@ export function TimeWheelPicker({
     return () => clearTimeout(timeout)
   }, [minuteList, minutes, secondList, seconds])
 
-  const clampIndex = useCallback((index: number, listLength: number) => {
-    if (index < 0) return 0
-    if (index >= listLength) return listLength - 1
-    return index
-  }, [])
-
-  const onMinuteMomentumScrollEnd = useCallback(
+  const handleMinuteMomentumEnd = useCallback(
     (event: any) => {
       if (isInitializing) return
       const offsetY = event.nativeEvent.contentOffset.y
@@ -89,8 +84,8 @@ export function TimeWheelPicker({
       const clamped = clampIndex(index, minuteList.length)
 
       if (clamped !== index) {
-        minuteListRef.current?.scrollToIndex({
-          index: clamped,
+        minuteScrollRef.current?.scrollTo({
+          y: clamped * ITEM_HEIGHT,
           animated: true,
         })
         return
@@ -107,7 +102,7 @@ export function TimeWheelPicker({
     [clampIndex, isInitializing, minuteList, minutes, onChangeMinutes],
   )
 
-  const onSecondMomentumScrollEnd = useCallback(
+  const handleSecondMomentumEnd = useCallback(
     (event: any) => {
       if (isInitializing) return
       const offsetY = event.nativeEvent.contentOffset.y
@@ -115,8 +110,8 @@ export function TimeWheelPicker({
       const clamped = clampIndex(index, secondList.length)
 
       if (clamped !== index) {
-        secondListRef.current?.scrollToIndex({
-          index: clamped,
+        secondScrollRef.current?.scrollTo({
+          y: clamped * ITEM_HEIGHT,
           animated: true,
         })
         return
@@ -133,55 +128,6 @@ export function TimeWheelPicker({
     [clampIndex, isInitializing, onChangeSeconds, secondList, seconds],
   )
 
-  const onMinuteViewableItemsChanged = useCallback(
-    (info: any) => {
-      if (isInitializing) return
-      const viewableItems = info.viewableItems as ViewTokenType[]
-      const centerItem = viewableItems.find(
-        (item) => item.index !== null && item.index !== undefined,
-      )
-      if (!centerItem || centerItem.index == null) return
-      lastMinuteIndex.current = centerItem.index
-    },
-    [isInitializing],
-  )
-
-  const onSecondViewableItemsChanged = useCallback(
-    (info: any) => {
-      if (isInitializing) return
-      const viewableItems = info.viewableItems as ViewTokenType[]
-      const centerItem = viewableItems.find(
-        (item) => item.index !== null && item.index !== undefined,
-      )
-      if (!centerItem || centerItem.index == null) return
-      lastSecondIndex.current = centerItem.index
-    },
-    [isInitializing],
-  )
-
-  const renderItem = useCallback(
-    ({ item }: { item: number }) => (
-      <View
-        style={{ height: ITEM_HEIGHT }}
-        className="items-center justify-center"
-      >
-        <Text className="font-display text-2xl text-foreground">
-          {formatNumber(item)}
-        </Text>
-      </View>
-    ),
-    [],
-  )
-
-  const getItemLayout = useCallback(
-    (_: ArrayLike<number> | null | undefined, index: number) => ({
-      length: ITEM_HEIGHT,
-      offset: ITEM_HEIGHT * index,
-      index,
-    }),
-    [],
-  )
-
   return (
     <View className="gap-2">
       <Text className="font-sans text-xs text-muted-foreground">{label}</Text>
@@ -194,50 +140,60 @@ export function TimeWheelPicker({
           <Text className="mb-1 font-sans text-[10px] uppercase tracking-widest text-muted-foreground">
             Min
           </Text>
-          <FlatList
-            ref={minuteListRef}
-            data={minuteList}
-            keyExtractor={(item) => `min-${item}`}
-            renderItem={renderItem}
+          <ScrollView
+            ref={minuteScrollRef}
             showsVerticalScrollIndicator={false}
             snapToInterval={ITEM_HEIGHT}
             decelerationRate="fast"
             bounces={false}
             overScrollMode="never"
-            getItemLayout={getItemLayout}
-            onViewableItemsChanged={onMinuteViewableItemsChanged}
-            onMomentumScrollEnd={onMinuteMomentumScrollEnd}
-            viewabilityConfig={{ itemVisiblePercentThreshold: 60 }}
-            contentContainerStyle={{
-              paddingVertical: (ITEM_HEIGHT * (VISIBLE_ITEMS - 1)) / 2,
-            }}
+            onMomentumScrollEnd={handleMinuteMomentumEnd}
+            contentContainerStyle={{ paddingVertical: PADDING_VERTICAL }}
             style={{ height: PICKER_HEIGHT, width: '100%' }}
-          />
+            nestedScrollEnabled
+          >
+            {minuteList.map((item) => (
+              <View
+                key={`min-${item}`}
+                style={{ height: ITEM_HEIGHT }}
+                className="items-center justify-center"
+              >
+                <Text className="font-display text-2xl text-foreground">
+                  {formatNumber(item)}
+                </Text>
+              </View>
+            ))}
+          </ScrollView>
         </View>
         <Text className="font-display text-xl text-foreground">:</Text>
         <View className="flex-1 items-center">
           <Text className="mb-1 font-sans text-[10px] uppercase tracking-widest text-muted-foreground">
             Seg
           </Text>
-          <FlatList
-            ref={secondListRef}
-            data={secondList}
-            keyExtractor={(item) => `sec-${item}`}
-            renderItem={renderItem}
+          <ScrollView
+            ref={secondScrollRef}
             showsVerticalScrollIndicator={false}
             snapToInterval={ITEM_HEIGHT}
             decelerationRate="fast"
             bounces={false}
             overScrollMode="never"
-            getItemLayout={getItemLayout}
-            onViewableItemsChanged={onSecondViewableItemsChanged}
-            onMomentumScrollEnd={onSecondMomentumScrollEnd}
-            viewabilityConfig={{ itemVisiblePercentThreshold: 60 }}
-            contentContainerStyle={{
-              paddingVertical: (ITEM_HEIGHT * (VISIBLE_ITEMS - 1)) / 2,
-            }}
+            onMomentumScrollEnd={handleSecondMomentumEnd}
+            contentContainerStyle={{ paddingVertical: PADDING_VERTICAL }}
             style={{ height: PICKER_HEIGHT, width: '100%' }}
-          />
+            nestedScrollEnabled
+          >
+            {secondList.map((item) => (
+              <View
+                key={`sec-${item}`}
+                style={{ height: ITEM_HEIGHT }}
+                className="items-center justify-center"
+              >
+                <Text className="font-display text-2xl text-foreground">
+                  {formatNumber(item)}
+                </Text>
+              </View>
+            ))}
+          </ScrollView>
         </View>
       </View>
     </View>
