@@ -3,9 +3,9 @@ import type { TimerStatus } from '../../hooks/timer.types'
 
 interface TimerControlsProps {
   status: TimerStatus
-  onStart: () => void
-  onPause: () => void
-  onReset: () => void
+  onStart: VoidFunction
+  onPause: VoidFunction
+  onReset: VoidFunction
 }
 
 export function TimerControls({

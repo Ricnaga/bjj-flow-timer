@@ -1,11 +1,11 @@
+import { useMemo } from 'react'
 import { View } from 'react-native'
-import Svg, { Circle, G } from 'react-native-svg'
 import Animated, {
   useAnimatedProps,
   useDerivedValue,
   withTiming,
 } from 'react-native-reanimated'
-import { useMemo } from 'react'
+import Svg, { Circle, G } from 'react-native-svg'
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle)
 
