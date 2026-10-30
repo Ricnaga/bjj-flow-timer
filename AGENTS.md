@@ -26,7 +26,25 @@ bjj-flow-timer/
 └── global.css         # Estilos globais do Tailwind/NativeWind
 ```
 
-**Regra importante:** Rotas ficam apenas em `src/app/`. Componentes, hooks, utils e demais lógica fora das rotas devem ir em `src/components/`, `src/hooks/`, `src/lib/`, `src/utils/`.
+**Regra importante:** Rotas ficam **apenas** em `src/app/`.
+
+O [Expo Router](https://docs.expo.dev/router/introduction/) escaneia **recursivamente** toda a pasta `app/` para montar a navegação. Qualquer arquivo `.tsx` ou `.ts` dentro dela é tratado como candidato a rota. Mesmo com pastas prefixadas por `_` (ex.: `_components`, `_hooks`), o router ainda pode escaneá-los em algumas versões e gerar warnings do tipo `missing the required default export` caso não tenham `export default` de um componente de rota.
+
+Por esse motivo, **nunca** coloque componentes, hooks ou lógica exclusiva dentro de `app/`.
+
+## Organização de pastas
+
+| Caminho                              | Quando usar                                                                                                        | Exemplo                                                  |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------- |
+| `src/app/`                           | **Apenas rotas e configuração de navegação.** Deve conter `_layout.tsx`, telas e arquivos próprios do roteamento.  | `src/app/(tabs)/index.tsx`, `src/app/(tabs)/_layout.tsx` |
+| `src/features/[feature]/components/` | Componentes **exclusivos** de uma feature/rota. Usados apenas por aquela tela específica.                          | `src/features/timer/components/ProfileForm.tsx`          |
+| `src/features/[feature]/hooks/`      | Hooks **exclusivos** de uma feature/rota. Usados apenas por aquela tela específica.                                | `src/features/timer/hooks/useBjjTimer.ts`                |
+| `src/components/`                    | Componentes **genéricos e reutilizáveis** entre múltiplas telas/features. UI kit sem lógica de negócio específica. | `src/components/timer/TimerControls.tsx`                 |
+| `src/hooks/`                         | Hooks **genéricos e reutilizáveis** entre múltiplas telas/features. Lógica pura e sem acoplamento com uma feature. | `src/hooks/countdown/useCountdown.ts`                    |
+| `src/lib/`                           | Configurações, clientes, storage, áudio, tema e integrações.                                                       | `src/lib/storage/profiles.ts`                            |
+| `src/utils/`                         | Funções puramente utilitárias, sem estado ou side effects complexos.                                               | `src/utils/time.ts`                                      |
+
+**Regra prática:** Se o componente/hook for usado **apenas** por uma única rota, coloque em `src/features/[feature]/`. Se puder ser usado por **duas ou mais rotas diferentes**, coloque em `src/components/` ou `src/hooks/`.
 
 ## Comandos
 
