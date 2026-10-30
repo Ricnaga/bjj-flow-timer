@@ -6,17 +6,19 @@ import {
   type TimerProfileFormValues,
 } from '../../../schemas/timer-profile.schema'
 
+type OnSaveData = {
+  name: string
+  prepTimeSeconds: number
+  fightTimeSeconds: number
+  restTimeSeconds: number
+  rounds: number
+  isInfinite: boolean
+}
+
 interface ProfileFormProps {
   visible: boolean
-  onClose: () => void
-  onSave: (data: {
-    name: string
-    prepTimeSeconds: number
-    fightTimeSeconds: number
-    restTimeSeconds: number
-    rounds: number
-    isInfinite: boolean
-  }) => void
+  onClose: VoidFunction
+  onSave: (data: OnSaveData) => void
 }
 
 const defaultValues: TimerProfileFormValues = {
@@ -76,58 +78,76 @@ export function ProfileForm({ visible, onClose, onSave }: ProfileFormProps) {
             Novo perfil
           </Text>
 
-          <Controller
-            control={control}
-            name="name"
-            render={({ field: { onChange, value } }) => (
-              <>
-                <TextInput
-                  className="mb-1 rounded-lg border border-border px-3 py-2 text-foreground"
-                  placeholder="Nome do perfil"
-                  placeholderTextColor="#a1a1aa"
-                  value={value}
-                  onChangeText={onChange}
-                />
-                {errors.name ? (
-                  <Text className="mb-2 font-sans text-xs text-destructive">
-                    {errors.name.message}
-                  </Text>
-                ) : (
-                  <View className="mb-2" />
-                )}
-              </>
-            )}
-          />
+          <View className="mb-1 gap-1">
+            <Text className="font-sans text-xs text-muted-foreground">
+              Nome do perfil
+            </Text>
+            <Controller
+              control={control}
+              name="name"
+              render={({ field: { onChange, value } }) => (
+                <>
+                  <TextInput
+                    className="rounded-lg border border-border px-3 py-2 text-foreground"
+                    placeholder="Ex.: Aquecimento"
+                    placeholderTextColor="#a1a1aa"
+                    value={value}
+                    onChangeText={onChange}
+                  />
+                  {errors.name ? (
+                    <Text className="font-sans text-xs text-destructive">
+                      {errors.name.message}
+                    </Text>
+                  ) : null}
+                </>
+              )}
+            />
+          </View>
+          <View className="mb-2" />
 
           <View className="mb-1 flex-row gap-2">
-            <Controller
-              control={control}
-              name="prepTimeSeconds"
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  className="flex-1 rounded-lg border border-border px-3 py-2 text-foreground"
-                  placeholder="Tempo inicial (seg)"
-                  placeholderTextColor="#a1a1aa"
-                  keyboardType="numeric"
-                  value={String(value)}
-                  onChangeText={(text) => onChange(text.replace(/[^0-9]/g, ''))}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="fightTimeSeconds"
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  className="flex-1 rounded-lg border border-border px-3 py-2 text-foreground"
-                  placeholder="Luta (seg)"
-                  placeholderTextColor="#a1a1aa"
-                  keyboardType="numeric"
-                  value={String(value)}
-                  onChangeText={(text) => onChange(text.replace(/[^0-9]/g, ''))}
-                />
-              )}
-            />
+            <View className="flex-1 gap-1">
+              <Text className="font-sans text-xs text-muted-foreground">
+                Tempo inicial (seg)
+              </Text>
+              <Controller
+                control={control}
+                name="prepTimeSeconds"
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    className="rounded-lg border border-border px-3 py-2 text-foreground"
+                    placeholder="10"
+                    placeholderTextColor="#a1a1aa"
+                    keyboardType="numeric"
+                    value={String(value)}
+                    onChangeText={(text) =>
+                      onChange(text.replace(/[^0-9]/g, ''))
+                    }
+                  />
+                )}
+              />
+            </View>
+            <View className="flex-1 gap-1">
+              <Text className="font-sans text-xs text-muted-foreground">
+                Tempo de luta (seg)
+              </Text>
+              <Controller
+                control={control}
+                name="fightTimeSeconds"
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    className="rounded-lg border border-border px-3 py-2 text-foreground"
+                    placeholder="300"
+                    placeholderTextColor="#a1a1aa"
+                    keyboardType="numeric"
+                    value={String(value)}
+                    onChangeText={(text) =>
+                      onChange(text.replace(/[^0-9]/g, ''))
+                    }
+                  />
+                )}
+              />
+            </View>
           </View>
           <View className="mb-2 flex-row gap-2">
             {errors.prepTimeSeconds ? (
@@ -146,20 +166,25 @@ export function ProfileForm({ visible, onClose, onSave }: ProfileFormProps) {
             )}
           </View>
 
-          <Controller
-            control={control}
-            name="restTimeSeconds"
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                className="mb-1 rounded-lg border border-border px-3 py-2 text-foreground"
-                placeholder="Descanso (seg)"
-                placeholderTextColor="#a1a1aa"
-                keyboardType="numeric"
-                value={String(value)}
-                onChangeText={(text) => onChange(text.replace(/[^0-9]/g, ''))}
-              />
-            )}
-          />
+          <View className="mb-1 gap-1">
+            <Text className="font-sans text-xs text-muted-foreground">
+              Tempo de descanso (seg)
+            </Text>
+            <Controller
+              control={control}
+              name="restTimeSeconds"
+              render={({ field: { onChange, value } }) => (
+                <TextInput
+                  className="rounded-lg border border-border px-3 py-2 text-foreground"
+                  placeholder="60"
+                  placeholderTextColor="#a1a1aa"
+                  keyboardType="numeric"
+                  value={String(value)}
+                  onChangeText={(text) => onChange(text.replace(/[^0-9]/g, ''))}
+                />
+              )}
+            />
+          </View>
           {errors.restTimeSeconds ? (
             <Text className="mb-2 font-sans text-xs text-destructive">
               {errors.restTimeSeconds.message}
@@ -168,24 +193,31 @@ export function ProfileForm({ visible, onClose, onSave }: ProfileFormProps) {
             <View className="mb-2" />
           )}
 
-          <View className="mb-1 flex-row items-center gap-2">
-            <Controller
-              control={control}
-              name="rounds"
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  className="flex-1 rounded-lg border border-border px-3 py-2 text-foreground"
-                  placeholder="Rounds"
-                  placeholderTextColor="#a1a1aa"
-                  keyboardType="numeric"
-                  value={isInfinite ? '0' : String(value)}
-                  editable={!isInfinite}
-                  onChangeText={(text) => onChange(text.replace(/[^0-9]/g, ''))}
-                />
-              )}
-            />
+          <View className="mb-1 flex-row items-end gap-2">
+            <View className="flex-1 gap-1">
+              <Text className="font-sans text-xs text-muted-foreground">
+                Número de rounds
+              </Text>
+              <Controller
+                control={control}
+                name="rounds"
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    className="rounded-lg border border-border px-3 py-2 text-foreground"
+                    placeholder="3"
+                    placeholderTextColor="#a1a1aa"
+                    keyboardType="numeric"
+                    value={isInfinite ? '0' : String(value)}
+                    editable={!isInfinite}
+                    onChangeText={(text) =>
+                      onChange(text.replace(/[^0-9]/g, ''))
+                    }
+                  />
+                )}
+              />
+            </View>
             <Pressable
-              className="rounded-lg border border-border px-3 py-2"
+              className="mb-0.5 rounded-lg border border-border px-3 py-2"
               onPress={() => {
                 const next = !isInfinite
                 setValue('isInfinite', next)
