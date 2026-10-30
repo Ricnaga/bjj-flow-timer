@@ -18,8 +18,8 @@ interface TimeWheelPickerProps {
   maxSeconds?: number
 }
 
-const ITEM_HEIGHT = 40
-const VISIBLE_ITEMS = 5
+const ITEM_HEIGHT = 36
+const VISIBLE_ITEMS = 3
 const PICKER_HEIGHT = ITEM_HEIGHT * VISIBLE_ITEMS
 
 function createRange(max: number): number[] {
@@ -49,6 +49,8 @@ export function TimeWheelPicker({
   const minuteListRef = useRef<FlatList<number>>(null)
   const secondListRef = useRef<FlatList<number>>(null)
   const [isInitializing, setIsInitializing] = useState(true)
+  const lastMinuteIndex = useRef(0)
+  const lastSecondIndex = useRef(0)
 
   useEffect(() => {
     const minuteIndex = minuteList.indexOf(minutes)
@@ -65,11 +67,71 @@ export function TimeWheelPicker({
         index: safeSecondIndex,
         animated: false,
       })
+      lastMinuteIndex.current = safeMinuteIndex
+      lastSecondIndex.current = safeSecondIndex
       setIsInitializing(false)
     }, 50)
 
     return () => clearTimeout(timeout)
   }, [minuteList, minutes, secondList, seconds])
+
+  const clampIndex = useCallback((index: number, listLength: number) => {
+    if (index < 0) return 0
+    if (index >= listLength) return listLength - 1
+    return index
+  }, [])
+
+  const onMinuteMomentumScrollEnd = useCallback(
+    (event: any) => {
+      if (isInitializing) return
+      const offsetY = event.nativeEvent.contentOffset.y
+      const index = Math.round(offsetY / ITEM_HEIGHT)
+      const clamped = clampIndex(index, minuteList.length)
+
+      if (clamped !== index) {
+        minuteListRef.current?.scrollToIndex({
+          index: clamped,
+          animated: true,
+        })
+        return
+      }
+
+      if (clamped !== lastMinuteIndex.current) {
+        lastMinuteIndex.current = clamped
+        const value = minuteList[clamped]
+        if (value !== undefined && value !== minutes) {
+          onChangeMinutes(value)
+        }
+      }
+    },
+    [clampIndex, isInitializing, minuteList, minutes, onChangeMinutes],
+  )
+
+  const onSecondMomentumScrollEnd = useCallback(
+    (event: any) => {
+      if (isInitializing) return
+      const offsetY = event.nativeEvent.contentOffset.y
+      const index = Math.round(offsetY / ITEM_HEIGHT)
+      const clamped = clampIndex(index, secondList.length)
+
+      if (clamped !== index) {
+        secondListRef.current?.scrollToIndex({
+          index: clamped,
+          animated: true,
+        })
+        return
+      }
+
+      if (clamped !== lastSecondIndex.current) {
+        lastSecondIndex.current = clamped
+        const value = secondList[clamped]
+        if (value !== undefined && value !== seconds) {
+          onChangeSeconds(value)
+        }
+      }
+    },
+    [clampIndex, isInitializing, onChangeSeconds, secondList, seconds],
+  )
 
   const onMinuteViewableItemsChanged = useCallback(
     (info: any) => {
@@ -79,11 +141,9 @@ export function TimeWheelPicker({
         (item) => item.index !== null && item.index !== undefined,
       )
       if (!centerItem || centerItem.index == null) return
-      const value = minuteList[centerItem.index]
-      if (value === undefined || value === minutes) return
-      onChangeMinutes(value)
+      lastMinuteIndex.current = centerItem.index
     },
-    [isInitializing, minuteList, minutes, onChangeMinutes],
+    [isInitializing],
   )
 
   const onSecondViewableItemsChanged = useCallback(
@@ -94,11 +154,9 @@ export function TimeWheelPicker({
         (item) => item.index !== null && item.index !== undefined,
       )
       if (!centerItem || centerItem.index == null) return
-      const value = secondList[centerItem.index]
-      if (value === undefined || value === seconds) return
-      onChangeSeconds(value)
+      lastSecondIndex.current = centerItem.index
     },
-    [isInitializing, onChangeSeconds, secondList, seconds],
+    [isInitializing],
   )
 
   const renderItem = useCallback(
@@ -144,11 +202,14 @@ export function TimeWheelPicker({
             showsVerticalScrollIndicator={false}
             snapToInterval={ITEM_HEIGHT}
             decelerationRate="fast"
+            bounces={false}
+            overScrollMode="never"
             getItemLayout={getItemLayout}
             onViewableItemsChanged={onMinuteViewableItemsChanged}
+            onMomentumScrollEnd={onMinuteMomentumScrollEnd}
             viewabilityConfig={{ itemVisiblePercentThreshold: 60 }}
             contentContainerStyle={{
-              paddingVertical: ITEM_HEIGHT * 2,
+              paddingVertical: (ITEM_HEIGHT * (VISIBLE_ITEMS - 1)) / 2,
             }}
             style={{ height: PICKER_HEIGHT, width: '100%' }}
           />
@@ -166,11 +227,14 @@ export function TimeWheelPicker({
             showsVerticalScrollIndicator={false}
             snapToInterval={ITEM_HEIGHT}
             decelerationRate="fast"
+            bounces={false}
+            overScrollMode="never"
             getItemLayout={getItemLayout}
             onViewableItemsChanged={onSecondViewableItemsChanged}
+            onMomentumScrollEnd={onSecondMomentumScrollEnd}
             viewabilityConfig={{ itemVisiblePercentThreshold: 60 }}
             contentContainerStyle={{
-              paddingVertical: ITEM_HEIGHT * 2,
+              paddingVertical: (ITEM_HEIGHT * (VISIBLE_ITEMS - 1)) / 2,
             }}
             style={{ height: PICKER_HEIGHT, width: '100%' }}
           />
