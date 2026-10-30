@@ -23,9 +23,12 @@ interface ProfileFormProps {
 
 const defaultValues: TimerProfileFormValues = {
   name: '',
-  prepTimeSeconds: 10,
-  fightTimeSeconds: 300,
-  restTimeSeconds: 60,
+  prepMin: 0,
+  prepSec: 10,
+  fightMin: 5,
+  fightSec: 0,
+  restMin: 1,
+  restSec: 0,
   rounds: 3,
   isInfinite: false,
 }
@@ -48,11 +51,15 @@ export function ProfileForm({ visible, onClose, onSave }: ProfileFormProps) {
   const rounds = watch('rounds')
 
   const onSubmit = (values: TimerProfileFormValues) => {
+    const prepTimeSeconds = values.prepMin * 60 + values.prepSec
+    const fightTimeSeconds = values.fightMin * 60 + values.fightSec
+    const restTimeSeconds = values.restMin * 60 + values.restSec
+
     onSave({
       name: values.name.trim(),
-      prepTimeSeconds: values.prepTimeSeconds,
-      fightTimeSeconds: values.fightTimeSeconds,
-      restTimeSeconds: values.restTimeSeconds,
+      prepTimeSeconds,
+      fightTimeSeconds,
+      restTimeSeconds,
       rounds: values.isInfinite ? 0 : values.rounds,
       isInfinite: values.isInfinite,
     })
@@ -105,93 +112,173 @@ export function ProfileForm({ visible, onClose, onSave }: ProfileFormProps) {
           </View>
           <View className="mb-2" />
 
-          <View className="mb-1 flex-row gap-2">
-            <View className="flex-1 gap-1">
-              <Text className="font-sans text-xs text-muted-foreground">
-                Tempo inicial (seg)
-              </Text>
-              <Controller
-                control={control}
-                name="prepTimeSeconds"
-                render={({ field: { onChange, value } }) => (
-                  <TextInput
-                    className="rounded-lg border border-border px-3 py-2 text-foreground"
-                    placeholder="10"
-                    placeholderTextColor="#a1a1aa"
-                    keyboardType="numeric"
-                    value={String(value)}
-                    onChangeText={(text) =>
-                      onChange(text.replace(/[^0-9]/g, ''))
-                    }
-                  />
-                )}
-              />
-            </View>
-            <View className="flex-1 gap-1">
-              <Text className="font-sans text-xs text-muted-foreground">
-                Tempo de luta (seg)
-              </Text>
-              <Controller
-                control={control}
-                name="fightTimeSeconds"
-                render={({ field: { onChange, value } }) => (
-                  <TextInput
-                    className="rounded-lg border border-border px-3 py-2 text-foreground"
-                    placeholder="300"
-                    placeholderTextColor="#a1a1aa"
-                    keyboardType="numeric"
-                    value={String(value)}
-                    onChangeText={(text) =>
-                      onChange(text.replace(/[^0-9]/g, ''))
-                    }
-                  />
-                )}
-              />
+          <View className="mb-1 gap-1">
+            <Text className="font-sans text-xs text-muted-foreground">
+              Tempo inicial
+            </Text>
+            <View className="flex-row gap-2">
+              <View className="flex-1 gap-1">
+                <Text className="font-sans text-xs text-muted-foreground">
+                  Minutos
+                </Text>
+                <Controller
+                  control={control}
+                  name="prepMin"
+                  render={({ field: { onChange, value } }) => (
+                    <TextInput
+                      className="rounded-lg border border-border px-3 py-2 text-foreground"
+                      placeholder="0"
+                      placeholderTextColor="#a1a1aa"
+                      keyboardType="numeric"
+                      value={String(value)}
+                      onChangeText={(text) =>
+                        onChange(text.replace(/[^0-9]/g, ''))
+                      }
+                    />
+                  )}
+                />
+              </View>
+              <View className="flex-1 gap-1">
+                <Text className="font-sans text-xs text-muted-foreground">
+                  Segundos
+                </Text>
+                <Controller
+                  control={control}
+                  name="prepSec"
+                  render={({ field: { onChange, value } }) => (
+                    <TextInput
+                      className="rounded-lg border border-border px-3 py-2 text-foreground"
+                      placeholder="10"
+                      placeholderTextColor="#a1a1aa"
+                      keyboardType="numeric"
+                      value={String(value)}
+                      onChangeText={(text) =>
+                        onChange(text.replace(/[^0-9]/g, ''))
+                      }
+                    />
+                  )}
+                />
+              </View>
             </View>
           </View>
-          <View className="mb-2 flex-row gap-2">
-            {errors.prepTimeSeconds ? (
-              <Text className="flex-1 font-sans text-xs text-destructive">
-                {errors.prepTimeSeconds.message}
-              </Text>
-            ) : (
-              <View className="flex-1" />
-            )}
-            {errors.fightTimeSeconds ? (
-              <Text className="flex-1 font-sans text-xs text-destructive">
-                {errors.fightTimeSeconds.message}
-              </Text>
-            ) : (
-              <View className="flex-1" />
-            )}
-          </View>
+          {(errors.prepMin || errors.prepSec) && (
+            <Text className="mb-2 font-sans text-xs text-destructive">
+              {errors.prepMin?.message || errors.prepSec?.message}
+            </Text>
+          )}
+          {!(errors.prepMin || errors.prepSec) && <View className="mb-2" />}
 
           <View className="mb-1 gap-1">
             <Text className="font-sans text-xs text-muted-foreground">
-              Tempo de descanso (seg)
+              Tempo de luta
             </Text>
-            <Controller
-              control={control}
-              name="restTimeSeconds"
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  className="rounded-lg border border-border px-3 py-2 text-foreground"
-                  placeholder="60"
-                  placeholderTextColor="#a1a1aa"
-                  keyboardType="numeric"
-                  value={String(value)}
-                  onChangeText={(text) => onChange(text.replace(/[^0-9]/g, ''))}
+            <View className="flex-row gap-2">
+              <View className="flex-1 gap-1">
+                <Text className="font-sans text-xs text-muted-foreground">
+                  Minutos
+                </Text>
+                <Controller
+                  control={control}
+                  name="fightMin"
+                  render={({ field: { onChange, value } }) => (
+                    <TextInput
+                      className="rounded-lg border border-border px-3 py-2 text-foreground"
+                      placeholder="5"
+                      placeholderTextColor="#a1a1aa"
+                      keyboardType="numeric"
+                      value={String(value)}
+                      onChangeText={(text) =>
+                        onChange(text.replace(/[^0-9]/g, ''))
+                      }
+                    />
+                  )}
                 />
-              )}
-            />
+              </View>
+              <View className="flex-1 gap-1">
+                <Text className="font-sans text-xs text-muted-foreground">
+                  Segundos
+                </Text>
+                <Controller
+                  control={control}
+                  name="fightSec"
+                  render={({ field: { onChange, value } }) => (
+                    <TextInput
+                      className="rounded-lg border border-border px-3 py-2 text-foreground"
+                      placeholder="0"
+                      placeholderTextColor="#a1a1aa"
+                      keyboardType="numeric"
+                      value={String(value)}
+                      onChangeText={(text) =>
+                        onChange(text.replace(/[^0-9]/g, ''))
+                      }
+                    />
+                  )}
+                />
+              </View>
+            </View>
           </View>
-          {errors.restTimeSeconds ? (
+          {(errors.fightMin || errors.fightSec) && (
             <Text className="mb-2 font-sans text-xs text-destructive">
-              {errors.restTimeSeconds.message}
+              {errors.fightMin?.message || errors.fightSec?.message}
             </Text>
-          ) : (
-            <View className="mb-2" />
           )}
+          {!(errors.fightMin || errors.fightSec) && <View className="mb-2" />}
+
+          <View className="mb-1 gap-1">
+            <Text className="font-sans text-xs text-muted-foreground">
+              Tempo de descanso
+            </Text>
+            <View className="flex-row gap-2">
+              <View className="flex-1 gap-1">
+                <Text className="font-sans text-xs text-muted-foreground">
+                  Minutos
+                </Text>
+                <Controller
+                  control={control}
+                  name="restMin"
+                  render={({ field: { onChange, value } }) => (
+                    <TextInput
+                      className="rounded-lg border border-border px-3 py-2 text-foreground"
+                      placeholder="1"
+                      placeholderTextColor="#a1a1aa"
+                      keyboardType="numeric"
+                      value={String(value)}
+                      onChangeText={(text) =>
+                        onChange(text.replace(/[^0-9]/g, ''))
+                      }
+                    />
+                  )}
+                />
+              </View>
+              <View className="flex-1 gap-1">
+                <Text className="font-sans text-xs text-muted-foreground">
+                  Segundos
+                </Text>
+                <Controller
+                  control={control}
+                  name="restSec"
+                  render={({ field: { onChange, value } }) => (
+                    <TextInput
+                      className="rounded-lg border border-border px-3 py-2 text-foreground"
+                      placeholder="0"
+                      placeholderTextColor="#a1a1aa"
+                      keyboardType="numeric"
+                      value={String(value)}
+                      onChangeText={(text) =>
+                        onChange(text.replace(/[^0-9]/g, ''))
+                      }
+                    />
+                  )}
+                />
+              </View>
+            </View>
+          </View>
+          {(errors.restMin || errors.restSec) && (
+            <Text className="mb-2 font-sans text-xs text-destructive">
+              {errors.restMin?.message || errors.restSec?.message}
+            </Text>
+          )}
+          {!(errors.restMin || errors.restSec) && <View className="mb-2" />}
 
           <View className="mb-1 flex-row items-end gap-2">
             <View className="flex-1 gap-1">
